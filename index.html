@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aspire Group of Colleges</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --red: #C0001E;
+    --red-dark: #8B0015;
+    --red-light: #E8002A;
+    --white: #FFFFFF;
+    --off-white: #FFF8F8;
+    --gray-light: #F5F0F0;
+    --gray-mid: #888;
+    --text-dark: #1A0505;
+    --text-muted: #5A3030;
+  }
+
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; color: var(--text-dark); background: var(--white); overflow-x: hidden; }
+
+  /* ── NAVBAR ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    background: var(--white);
+    border-bottom: 2px solid var(--red);
+    box-shadow: 0 2px 20px rgba(192,0,30,0.12);
+    transition: all 0.3s;
+  }
+  nav.scrolled { box-shadow: 0 4px 30px rgba(192,0,30,0.2); }
+
+  .nav-inner {
+    max-width: 1280px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem; height: 70px;
+  }
+
+  .logo-area { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+  .logo-crest {
+    width: 48px; height: 48px;
+    background: var(--red);
+    border-radius: 8px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    position: relative; overflow: hidden;
+  }
+  .logo-crest::before {
+    content: 'A';
+    font-family: 'Playfair Display', serif;
+    font-size: 26px; font-weight: 900;
+    color: white; line-height: 1;
+  }
+  .logo-crest::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0; height: 6px;
+    background: rgba(255,255,255,0.25);
+  }
+  .logo-text { line-height: 1.1; }
+  .logo-text .main { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 700; color: var(--red); display: block; }
+  .logo-text .sub { font-size: 10px; font-weight: 500; color: var(--text-muted); letter-spacing: 0.06em; text-transform: uppercase; display: block; }
+
+  .nav-links { display: flex; align-items: center; gap: 0; list-style: none; }
+  .nav-links a {
+    display: block; padding: 0 1rem; height: 70px; line-height: 70px;
+    font-size: 13.5px; font-weight: 500; color: var(--text-dark);
+    text-decoration: none; letter-spacing: 0.02em;
+    border-bottom: 3px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+    position: relative; white-space: nowrap;
+  }
+  .nav-links a:hover, .nav-links a.active { color: var(--red); border-bottom-color: var(--red); }
+
+  .dropdown { position: relative; }
+  .dropdown-menu {
+    display: none; position: absolute; top: 70px; left: 0;
+    background: white; min-width: 210px;
+    border-top: 3px solid var(--red);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    border-radius: 0 0 8px 8px; overflow: hidden; z-index: 100;
+  }
+  .dropdown:hover .dropdown-menu { display: block; }
+  .dropdown-menu a {
+    height: auto; line-height: 1; padding: 11px 18px;
+    border-bottom: 1px solid #f5f0f0; font-size: 13px;
+    display: flex; align-items: center; gap: 8px;
+    color: var(--text-dark);
+  }
+  .dropdown-menu a:hover { background: #FFF0F2; color: var(--red); border-bottom-color: #f5f0f0; }
+  .dropdown-menu a::before { content: '›'; color: var(--red); font-size: 16px; font-weight: 700; }
+  .dropdown > a::after { content: ' ▾'; font-size: 10px; }
+
+  .nav-actions { display: flex; gap: 8px; align-items: center; }
+  .btn-login {
+    padding: 8px 18px; border-radius: 6px; font-size: 13.5px; font-weight: 600;
+    border: 2px solid var(--red); color: var(--red); background: transparent;
+    cursor: pointer; text-decoration: none; transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-login:hover { background: #FFF0F2; }
+  .btn-signup {
+    padding: 8px 18px; border-radius: 6px; font-size: 13.5px; font-weight: 600;
+    border: 2px solid var(--red); color: white; background: var(--red);
+    cursor: pointer; text-decoration: none; transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-signup:hover { background: var(--red-dark); border-color: var(--red-dark); }
+
+  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
+  .hamburger span { display: block; width: 24px; height: 2px; background: var(--red); border-radius: 2px; transition: all 0.3s; }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative; height: 100vh; min-height: 600px;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(135deg, rgba(140,0,20,0.85) 0%, rgba(0,0,0,0.55) 60%, rgba(140,0,20,0.3) 100%),
+      url('https://images.unsplash.com/photo-1562774053-701939374585?w=1600&q=80') center/cover no-repeat;
+  }
+  .hero-bg::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 50%);
+  }
+  .hero-content { position: relative; z-index: 2; text-align: center; color: white; padding: 2rem; max-width: 820px; }
+  .hero-badge {
+    display: inline-block; background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.4);
+    backdrop-filter: blur(8px);
+    padding: 6px 20px; border-radius: 50px;
+    font-size: 12px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase;
+    margin-bottom: 1.5rem; color: rgba(255,255,255,0.9);
+  }
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.4rem, 6vw, 4.5rem);
+    font-weight: 900; line-height: 1.08;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.4);
+  }
+  .hero-title span { color: #FFD0D6; display: block; }
+  .hero-subtitle {
+    font-size: clamp(1rem, 2.5vw, 1.35rem);
+    font-weight: 300; color: rgba(255,255,255,0.85);
+    margin-bottom: 0.6rem; letter-spacing: 0.03em;
+  }
+  .hero-campus {
+    font-size: 13px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase;
+    color: #FFB3BC; margin-bottom: 2.2rem;
+  }
+  .hero-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+  .btn-apply {
+    padding: 15px 40px; background: var(--red); color: white;
+    font-size: 15px; font-weight: 600; border: none; border-radius: 8px;
+    cursor: pointer; letter-spacing: 0.04em; text-transform: uppercase;
+    text-decoration: none; transition: all 0.25s;
+    box-shadow: 0 4px 20px rgba(192,0,30,0.5);
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-apply:hover { background: var(--red-dark); transform: translateY(-2px); box-shadow: 0 6px 30px rgba(192,0,30,0.6); }
+  .btn-explore {
+    padding: 15px 36px; background: rgba(255,255,255,0.15); color: white;
+    font-size: 15px; font-weight: 500; border: 2px solid rgba(255,255,255,0.6);
+    border-radius: 8px; cursor: pointer; letter-spacing: 0.03em;
+    text-decoration: none; backdrop-filter: blur(6px); transition: all 0.25s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-explore:hover { background: rgba(255,255,255,0.25); transform: translateY(-2px); }
+
+  .hero-stats {
+    position: absolute; bottom: 40px; left: 0; right: 0; z-index: 2;
+    display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap;
+  }
+  .stat { text-align: center; color: white; }
+  .stat-num { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: #FFD0D6; display: block; }
+  .stat-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.65); }
+
+  /* ── SECTIONS ── */
+  section { padding: 5rem 2rem; }
+  .container { max-width: 1200px; margin: 0 auto; }
+  .section-tag { font-size: 12px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--red); margin-bottom: 0.5rem; display: block; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 700; color: var(--text-dark); margin-bottom: 1rem; line-height: 1.2; }
+  .section-desc { font-size: 15px; color: var(--text-muted); line-height: 1.7; max-width: 560px; }
+
+  /* ── ABOUT ── */
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+  .about-image {
+    position: relative; border-radius: 16px; overflow: hidden; aspect-ratio: 4/3;
+    background: url('https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800&q=80') center/cover;
+  }
+  .about-image::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(192,0,30,0.3) 0%, transparent 60%);
+  }
+  .about-badge {
+    position: absolute; bottom: 20px; left: 20px;
+    background: var(--red); color: white; padding: 12px 20px; border-radius: 10px;
+  }
+  .about-badge .num { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; display: block; }
+  .about-badge .lbl { font-size: 11px; letter-spacing: 0.06em; }
+  .about-features { margin-top: 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .feature-pill {
+    display: flex; align-items: center; gap: 10px;
+    background: #FFF0F2; border-radius: 8px; padding: 12px 14px;
+    font-size: 13px; font-weight: 500; color: var(--text-dark);
+  }
+  .feature-pill .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
+
+  /* ── PROGRAMS ── */
+  .programs-section { background: var(--off-white); }
+  .programs-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem; }
+  .programs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; }
+  .program-card {
+    background: white; border-radius: 12px; padding: 1.6rem;
+    border: 1px solid #F0E0E0; cursor: pointer;
+    transition: all 0.25s; position: relative; overflow: hidden;
+  }
+  .program-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--red); transform: scaleX(0); transform-origin: left;
+    transition: transform 0.3s;
+  }
+  .program-card:hover { transform: translateY(-4px); box-shadow: 0 12px 35px rgba(192,0,30,0.12); }
+  .program-card:hover::before { transform: scaleX(1); }
+  .program-icon { font-size: 2rem; margin-bottom: 1rem; display: block; }
+  .program-name { font-size: 15px; font-weight: 600; color: var(--text-dark); margin-bottom: 0.4rem; }
+  .program-dur { font-size: 12px; color: var(--gray-mid); margin-bottom: 0.8rem; }
+  .program-tag { font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--red); }
+
+  /* ── ADMISSION ── */
+  .admission-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 2.5rem; }
+  .step-card {
+    text-align: center; padding: 2rem 1.5rem;
+    background: white; border-radius: 12px; border: 1px solid #F0E0E0;
+  }
+  .step-num {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: var(--red); color: white;
+    font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1rem;
+  }
+  .step-title { font-size: 15px; font-weight: 600; margin-bottom: 0.5rem; }
+  .step-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+  /* ── CONTACT ── */
+  .contact-section { background: var(--red); color: white; }
+  .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+  .contact-form { background: white; border-radius: 16px; padding: 2rem; }
+  .form-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--text-dark); margin-bottom: 1.2rem; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .form-group { margin-bottom: 10px; }
+  .form-group label { font-size: 12px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.05em; text-transform: uppercase; display: block; margin-bottom: 5px; }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%; padding: 10px 14px; border-radius: 7px;
+    border: 1.5px solid #E0D0D0; font-size: 14px; font-family: 'DM Sans', sans-serif;
+    color: var(--text-dark); background: white; outline: none; transition: border-color 0.2s;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--red); }
+  .form-group textarea { resize: vertical; min-height: 80px; }
+  .btn-submit {
+    width: 100%; padding: 13px; background: var(--red); color: white; border: none;
+    border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; letter-spacing: 0.04em; text-transform: uppercase;
+    transition: background 0.2s;
+  }
+  .btn-submit:hover { background: var(--red-dark); }
+  .contact-info .section-title { color: white; }
+  .contact-info .section-desc { color: rgba(255,255,255,0.75); max-width: 400px; }
+  .contact-details { margin-top: 2rem; display: flex; flex-direction: column; gap: 1rem; }
+  .contact-item { display: flex; gap: 14px; align-items: flex-start; }
+  .contact-icon { width: 42px; height: 42px; border-radius: 10px; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .contact-item-text .label { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.55); margin-bottom: 3px; }
+  .contact-item-text .value { font-size: 14px; font-weight: 500; color: white; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--text-dark); color: white;
+    padding: 3rem 2rem 1.5rem;
+  }
+  .footer-inner { max-width: 1200px; margin: 0 auto; }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 2rem; }
+  .footer-brand .logo-text .main { color: #FFD0D6; font-size: 16px; }
+  .footer-brand .logo-text .sub { color: rgba(255,255,255,0.4); }
+  .footer-brand p { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.7; margin-top: 1rem; max-width: 280px; }
+  .footer-col h4 { font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 1rem; }
+  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+  .footer-col ul li a { font-size: 13px; color: rgba(255,255,255,0.6); text-decoration: none; transition: color 0.2s; }
+  .footer-col ul li a:hover { color: #FFD0D6; }
+  .footer-bottom { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+  .footer-bottom p { font-size: 12px; color: rgba(255,255,255,0.35); }
+
+  /* ── MOBILE NAV ── */
+  .mobile-nav {
+    display: none; position: fixed; top: 70px; left: 0; right: 0; bottom: 0;
+    background: white; z-index: 999; overflow-y: auto; padding: 1.5rem;
+  }
+  .mobile-nav.open { display: block; }
+  .mobile-nav a {
+    display: block; padding: 12px 0; font-size: 15px; font-weight: 500;
+    color: var(--text-dark); text-decoration: none; border-bottom: 1px solid #F5F0F0;
+  }
+  .mobile-nav a:hover { color: var(--red); }
+  .mobile-nav .mobile-sub { padding-left: 1rem; background: #FFF8F8; border-radius: 8px; margin: 4px 0; }
+  .mobile-nav .mobile-sub a { font-size: 13px; border-bottom: 1px solid #FFF0F0; padding: 10px 12px; }
+  .mobile-actions { margin-top: 1.5rem; display: flex; flex-direction: column; gap: 10px; }
+
+  @media (max-width: 900px) {
+    .nav-links, .nav-actions { display: none; }
+    .hamburger { display: flex; }
+    .about-grid, .contact-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 600px) {
+    section { padding: 3.5rem 1.2rem; }
+    .footer-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+    .hero-stats { gap: 1.5rem; }
+    .form-row { grid-template-columns: 1fr; }
+  }
+
+  /* Scroll animations */
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.6s, transform 0.6s; }
+  .reveal.visible { opacity: 1; transform: none; }
+</style>
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <a href="#" class="logo-area">
+      <div class="logo-crest"></div>
+      <div class="logo-text">
+        <span class="main">Aspire Group of Colleges</span>
+        <span class="sub">Excellence · Integrity · Innovation</span>
+      </div>
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="#home" class="active">Home</a></li>
+      <li><a href="#about">About</a></li>
+      <li class="dropdown">
+        <a href="#admission">Admission</a>
+        <div class="dropdown-menu">
+          <a href="#admission">How to Apply</a>
+          <a href="#admission">Eligibility Criteria</a>
+          <a href="#admission">Merit List</a>
+          <a href="#admission">Fee Structure</a>
+          <a href="#admission">Scholarships</a>
+          <a href="#admission">Important Dates</a>
+        </div>
+      </li>
+      <li><a href="#programs">Programs</a></li>
+      <li class="dropdown">
+        <a href="#">Campus Life</a>
+        <div class="dropdown-menu">
+          <a href="#">Facilities</a>
+          <a href="#">Sports & Activities</a>
+          <a href="#">Student Council</a>
+          <a href="#">Events & Gallery</a>
+        </div>
+      </li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <a href="#" class="btn-login">Sign in</a>
+      <a href="#" class="btn-signup">Sign Up</a>
+    </div>
+
+    <div class="hamburger" id="hamburger" onclick="toggleMobileNav()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<!-- ── MOBILE NAV ── -->
+<div class="mobile-nav" id="mobileNav">
+  <a href="#home" onclick="toggleMobileNav()">Home</a>
+  <a href="#about" onclick="toggleMobileNav()">About</a>
+  <a href="#admission" onclick="toggleMobileNav()">Admission</a>
+  <div class="mobile-sub">
+    <a href="#admission" onclick="toggleMobileNav()">How to Apply</a>
+    <a href="#admission" onclick="toggleMobileNav()">Eligibility Criteria</a>
+    <a href="#admission" onclick="toggleMobileNav()">Merit List</a>
+    <a href="#admission" onclick="toggleMobileNav()">Fee Structure</a>
+    <a href="#admission" onclick="toggleMobileNav()">Scholarships</a>
+  </div>
+  <a href="#programs" onclick="toggleMobileNav()">Programs</a>
+  <a href="#contact" onclick="toggleMobileNav()">Campus Life</a>
+  <a href="#contact" onclick="toggleMobileNav()">Contact</a>
+  <div class="mobile-actions">
+    <a href="login.html" class="btn-signin" style="text-align:center;">Sign in</a>
+    <a href="#" class="btn-signup" style="text-align:center;">Sign Up</a>
+  </div>
+</div>
+
+<!-- ── HERO ── -->
+<section id="home" class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-badge">Est. 2005 · Sialkot, Punjab</div>
+    <h1 class="hero-title">
+      ASPIRE COLLEGE
+      <span>GHOSIA CAMPUS</span>
+    </h1>
+    <p class="hero-subtitle">Where Knowledge Meets Character</p>
+    <p class="hero-campus">📍 Aspire Group of Colleges — Ghosia Campus</p>
+    <div class="hero-actions">
+      <a href="#admission" class="btn-apply">Apply Now</a>
+      <a href="#programs" class="btn-explore">Explore Programs</a>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat"><span class="stat-num">5000+</span><span class="stat-label">Students</span></div>
+    <div class="stat"><span class="stat-num">150+</span><span class="stat-label">Faculty</span></div>
+    <div class="stat"><span class="stat-num">20+</span><span class="stat-label">Programs</span></div>
+    <div class="stat"><span class="stat-num">18+</span><span class="stat-label">Years of Excellence</span></div>
+  </div>
+</section>
+
+<!-- ── ABOUT ── -->
+<section id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="reveal">
+        <div class="about-image">
+          <div class="about-badge">
+            <span class="num">18+</span>
+            <span class="lbl">Years of Excellence</span>
+          </div>
+        </div>
+      </div>
+      <div class="reveal">
+        <span class="section-tag">About Us</span>
+        <h2 class="section-title">Shaping Leaders of Tomorrow</h2>
+        <p class="section-desc">Aspire Group of Colleges has been a beacon of academic excellence in Pakistan since 2005. Our Ghosia Campus offers a world-class learning environment rooted in values, innovation, and community.</p>
+        <p class="section-desc" style="margin-top:1rem;">We believe education is not just about degrees — it's about building character, critical thinking, and the confidence to make a difference in the world.</p>
+        <div class="about-features">
+          <div class="feature-pill"><span class="dot"></span>Board-Topping Results</div>
+          <div class="feature-pill"><span class="dot"></span>Modern Laboratories</div>
+          <div class="feature-pill"><span class="dot"></span>Certified Faculty</div>
+          <div class="feature-pill"><span class="dot"></span>Career Counseling</div>
+          <div class="feature-pill"><span class="dot"></span>Digital Library</div>
+          <div class="feature-pill"><span class="dot"></span>Sports Facilities</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PROGRAMS ── -->
+<section id="programs" class="programs-section">
+  <div class="container">
+    <div class="programs-header reveal">
+      <div>
+        <span class="section-tag">Academic Programs</span>
+        <h2 class="section-title">Choose Your Path</h2>
+      </div>
+      <a href="#admission" class="btn-signup" style="white-space:nowrap;">View All Programs</a>
+    </div>
+    <div class="programs-grid reveal">
+      <div class="program-card">
+        <span class="program-icon">🔬</span>
+        <p class="program-name">FSc Pre-Medical</p>
+        <p class="program-dur">2 Years · Intermediate</p>
+        <span class="program-tag">Science Group</span>
+      </div>
+      <div class="program-card">
+        <span class="program-icon">⚙️</span>
+        <p class="program-name">FSc Pre-Engineering</p>
+        <p class="program-dur">2 Years · Intermediate</p>
+        <span class="program-tag">Science Group</span>
+      </div>
+      <div class="program-card">
+        <span class="program-icon">💼</span>
+        <p class="program-name">ICS (Computer Science)</p>
+        <p class="program-dur">2 Years · Intermediate</p>
+        <span class="program-tag">Computer Group</span>
+      </div>
+      <div class="program-card">
+        <span class="program-icon">📊</span>
+        <p class="program-name">I.Com (Commerce)</p>
+        <p class="program-dur">2 Years · Intermediate</p>
+        <span class="program-tag">Commerce Group</span>
+      </div>
+      <div class="program-card">
+        <span class="program-icon">📚</span>
+        <p class="program-name">FA (General Arts)</p>
+        <p class="program-dur">2 Years · Intermediate</p>
+        <span class="program-tag">Arts Group</span>
+      </div>
+      <div class="program-card">
+        <span class="program-icon">🏫</span>
+        <p class="program-name">Matric (Science)</p>
+        <p class="program-dur">2 Years · Secondary</p>
+        <span class="program-tag">Matriculation</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ADMISSION ── -->
+<section id="admission">
+  <div class="container">
+    <div style="text-align:center;" class="reveal">
+      <span class="section-tag">Admissions 2025</span>
+      <h2 class="section-title">How to Enroll</h2>
+      <p class="section-desc" style="margin: 0 auto 0.5rem;">Joining Aspire is simple. Follow these steps to secure your place.</p>
+    </div>
+    <div class="admission-steps reveal">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <p class="step-title">Check Eligibility</p>
+        <p class="step-desc">Review program-specific eligibility and required documents on our admissions page.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <p class="step-title">Fill Online Form</p>
+        <p class="step-desc">Complete and submit the online application form with accurate personal and academic details.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <p class="step-title">Entry Test</p>
+        <p class="step-desc">Appear for the college's entry test or submit your Board/BISE result for merit-based selection.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">4</div>
+        <p class="step-title">Confirmation</p>
+        <p class="step-desc">Receive admission confirmation, pay your fees, and collect your student ID to begin classes.</p>
+      </div>
+    </div>
+    <div style="text-align:center; margin-top:2.5rem;" class="reveal">
+      <a href="#contact" class="btn-apply" style="display:inline-block;">Apply Now — Seats Filling Fast</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── CONTACT ── -->
+<section id="contact" class="contact-section">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="contact-info reveal">
+        <span class="section-tag" style="color:rgba(255,255,255,0.6);">Get In Touch</span>
+        <h2 class="section-title">We're Here to Help</h2>
+        <p class="section-desc">Have questions about admissions, programs, or campus life? Reach out and our team will get back to you promptly.</p>
+        <div class="contact-details">
+          <div class="contact-item">
+            <div class="contact-icon">📍</div>
+            <div class="contact-item-text">
+              <p class="label">Address</p>
+              <p class="value">Ghosia Campus, Sialkot, Punjab, Pakistan</p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon">📞</div>
+            <div class="contact-item-text">
+              <p class="label">Phone</p>
+              <p class="value">+92 52 000 0000</p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon">✉️</div>
+            <div class="contact-item-text">
+              <p class="label">Email</p>
+              <p class="value">info@aspirecollege.edu.pk</p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon">🕐</div>
+            <div class="contact-item-text">
+              <p class="label">Office Hours</p>
+              <p class="value">Mon – Sat: 8:00 AM – 4:00 PM</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="contact-form">
+          <p class="form-title">Send Us a Message</p>
+          <div class="form-row">
+            <div class="form-group"><label>First Name</label><input type="text" placeholder="Ali"></div>
+            <div class="form-group"><label>Last Name</label><input type="text" placeholder="Ahmed"></div>
+          </div>
+          <div class="form-group"><label>Email</label><input type="email" placeholder="you@example.com"></div>
+          <div class="form-group"><label>Phone</label><input type="tel" placeholder="+92 300 0000000"></div>
+          <div class="form-group">
+            <label>Interested Program</label>
+            <select>
+              <option>Select a program…</option>
+              <option>FSc Pre-Medical</option>
+              <option>FSc Pre-Engineering</option>
+              <option>ICS (Computer Science)</option>
+              <option>I.Com (Commerce)</option>
+              <option>FA (General Arts)</option>
+              <option>Matric (Science)</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Message</label><textarea placeholder="Your question or message…"></textarea></div>
+          <button class="btn-submit">Send Message →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo-area" style="margin-bottom:0.8rem;">
+          <div class="logo-crest" style="width:40px;height:40px;"></div>
+          <div class="logo-text">
+            <span class="main">Aspire Group of Colleges</span>
+            <span class="sub">Ghosia Campus · Sialkot</span>
+          </div>
+        </div>
+        <p>Nurturing talent and building futures through quality education and strong values since 2005.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="#home">Home</a></li>
+          <li><a href="#about">About Us</a></li>
+          <li><a href="#programs">Programs</a></li>
+          <li><a href="#admission">Admission</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Admissions</h4>
+        <ul>
+          <li><a href="#">Apply Online</a></li>
+          <li><a href="#">Merit List</a></li>
+          <li><a href="#">Fee Structure</a></li>
+          <li><a href="#">Scholarships</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="#">Ghosia Campus</a></li>
+          <li><a href="#">info@aspirecollege.edu.pk</a></li>
+          <li><a href="#">+92 52 000 0000</a></li>
+          <li><a href="#">Facebook Page</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 Aspire Group of Colleges. All rights reserved.</p>
+      <p>Designed with ❤️ for Aspire Ghosia Campus</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  function toggleMobileNav() {
+    document.getElementById('mobileNav').classList.toggle('open');
+  }
+
+  window.addEventListener('scroll', () => {
+    const nav = document.getElementById('navbar');
+    nav.classList.toggle('scrolled', window.scrollY > 30);
+
+    const links = document.querySelectorAll('.nav-links a:not(.dropdown-menu a)');
+    const sections = ['home','about','admission','programs','contact'];
+    let current = '';
+    sections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && window.scrollY >= el.offsetTop - 100) current = id;
+    });
+    links.forEach(a => {
+      a.classList.remove('active');
+      if (a.getAttribute('href') === '#' + current) a.classList.add('active');
+    });
+  });
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  document.querySelector('.btn-submit').addEventListener('click', function() {
+    this.textContent = '✓ Message Sent!';
+    this.style.background = '#0a7a3a';
+    setTimeout(() => { this.textContent = 'Send Message →'; this.style.background = ''; }, 3000);
+  });
+</script>
+</body>
+</html>
